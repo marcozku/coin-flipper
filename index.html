@@ -35,6 +35,7 @@
             width: min(90vw, 400px);
             height: min(90vw, 400px);
             position: relative;
+            perspective: 1000px;
         }
 
         .coin {
@@ -44,7 +45,7 @@
             top: 50%;
             left: 50%;
             transform-style: preserve-3d;
-            transform: translate(-50%, -50%) rotateX(20deg);
+            transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg) rotateY(0deg);
             transition: transform 0.1s ease-out;
         }
 
@@ -302,7 +303,7 @@
     </div>
 
     <div class="hint">
-        💡 真實擲銀仔 | 拋起落下 | 彈跳效果 | 100% 離線
+        💡 真實擲銀仔 | 隨機旋轉 | 彈跳落地 | 翻面展示
     </div>
 
     <script>
@@ -330,57 +331,66 @@
 
             coin.classList.add('flipping');
 
-            const minSpins = 7;
+            const minSpins = 10;
             const baseRotation = minSpins * 360;
-            const randomRotation = Math.random() * 360;
-            const targetRotation = baseRotation + randomRotation + (isHeads ? 0 : 180);
+            const randomX = Math.random() * 720 - 360;
+            const randomY = Math.random() * 720 - 360;
+            const randomZ = baseRotation + Math.random() * 720;
+
+            const targetRotationY = isHeads ? 0 : 180;
+            const targetRotationZ = Math.round(randomZ / 180) * 180;
 
             const keyframes = [
                 {
-                    transform: 'translate(-50%, -50%) rotateX(20deg) rotateY(0deg)',
+                    transform: 'translate(-50%, -50%) rotateX(70deg) rotateZ(0deg) rotateY(0deg)',
                     offset: 0
                 },
                 {
-                    transform: 'translate(-50%, calc(-50% - 300px)) rotateX(20deg) rotateY(' + (targetRotation * 0.3) + 'deg)',
-                    offset: 0.3
+                    transform: 'translate(-50%, calc(-50% - 350px)) rotateX(70deg) rotateZ(' + (randomZ * 0.3) + 'deg) rotateY(' + (randomY * 0.3) + 'deg)',
+                    offset: 0.25
                 },
                 {
-                    transform: 'translate(-50%, calc(-50% - 100px)) rotateX(20deg) rotateY(' + (targetRotation * 0.6) + 'deg)',
-                    offset: 0.6
+                    transform: 'translate(-50%, calc(-50% - 150px)) rotateX(70deg) rotateZ(' + (randomZ * 0.5) + 'deg) rotateY(' + (randomY * 0.5) + 'deg)',
+                    offset: 0.5
                 },
                 {
-                    transform: 'translate(-50%, calc(-50% - 50px)) rotateX(20deg) rotateY(' + (targetRotation * 0.8) + 'deg)',
-                    offset: 0.8
+                    transform: 'translate(-50%, calc(-50% - 50px)) rotateX(70deg) rotateZ(' + (randomZ * 0.7) + 'deg) rotateY(' + (randomY * 0.7) + 'deg)',
+                    offset: 0.75
                 },
                 {
-                    transform: 'translate(-50%, -50%) rotateX(20deg) rotateY(' + targetRotation + 'deg)',
+                    transform: 'translate(-50%, -50%) rotateX(70deg) rotateZ(' + targetRotationZ + 'deg) rotateY(' + randomY + 'deg)',
+                    offset: 0.9
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateX(0deg) rotateZ(' + targetRotationZ + 'deg) rotateY(0deg)',
                     offset: 1
                 }
             ];
 
             const animation = coin.animate(keyframes, {
-                duration: 2500,
+                duration: 3000,
                 easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                 fill: 'forwards'
             });
 
             const shadowKeyframes = [
                 { transform: 'translateX(-50%) scale(1)', opacity: 0.8 },
-                { transform: 'translateX(-50%) scale(0.3)', opacity: 0.2 },
-                { transform: 'translateX(-50%) scale(0.5)', opacity: 0.4 },
-                { transform: 'translateX(-50%) scale(0.7)', opacity: 0.6 },
+                { transform: 'translateX(-50%) scale(0.2)', opacity: 0.1 },
+                { transform: 'translateX(-50%) scale(0.4)', opacity: 0.3 },
+                { transform: 'translateX(-50%) scale(0.6)', opacity: 0.5 },
+                { transform: 'translateX(-50%) scale(0.8)', opacity: 0.7 },
                 { transform: 'translateX(-50%) scale(1)', opacity: 0.8 }
             ];
 
             const shadowAnimation = shadow.animate(shadowKeyframes, {
-                duration: 2500,
+                duration: 3000,
                 easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                 fill: 'forwards'
             });
 
             animation.onfinish = () => {
                 coin.classList.remove('flipping');
-                coin.style.transform = 'translate(-50%, -50%) rotateX(20deg) rotateY(' + (isHeads ? 0 : 180) + 'deg)';
+                coin.style.transform = 'translate(-50%, -50%) rotateX(0deg) rotateZ(' + targetRotationZ + 'deg) rotateY(0deg)';
 
                 if (isHeads) {
                     stats.heads++;
