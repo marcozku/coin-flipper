@@ -35,7 +35,6 @@
             width: min(90vw, 400px);
             height: min(90vw, 400px);
             position: relative;
-            perspective: 1000px;
         }
 
         .coin {
@@ -45,7 +44,7 @@
             top: 50%;
             left: 50%;
             transform-style: preserve-3d;
-            transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg);
+            transform: translate(-50%, -50%) rotateX(20deg);
             transition: transform 0.1s ease-out;
         }
 
@@ -62,8 +61,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            font-weight: bold;
             box-shadow:
                 inset 0 0 50px rgba(0, 0, 0, 0.5),
                 0 0 30px rgba(0, 0, 0, 0.8),
@@ -85,14 +82,12 @@
 
         .coin-front {
             background: linear-gradient(145deg, #ffd700 0%, #ffed4a 30%, #ffd700 50%, #daa520 70%, #b8860b 100%);
-            transform: rotateX(0deg);
-            color: #8b4513;
+            transform: rotateY(0deg);
         }
 
         .coin-back {
             background: linear-gradient(145deg, #e8e8e8 0%, #f5f5f5 30%, #e8e8e8 50%, #d0d0d0 70%, #a8a8a8 100%);
-            transform: rotateX(180deg);
-            color: #505050;
+            transform: rotateY(180deg);
         }
 
         .coin-edge {
@@ -122,7 +117,7 @@
             left: 50%;
             transform: translateX(-50%);
             filter: blur(15px);
-            transition: all 0.1s ease;
+            transition: all 0.05s ease;
             opacity: 0.8;
         }
 
@@ -307,7 +302,7 @@
     </div>
 
     <div class="hint">
-        💡 真實物理模擬 | 拋物線軌跡 | 彈跳效果 | 100% 離線
+        💡 真實擲銀仔 | 拋起落下 | 彈跳效果 | 100% 離線
     </div>
 
     <script>
@@ -324,19 +319,6 @@
         const headsPercent = document.getElementById('headsPercent');
         const tailsPercent = document.getElementById('tailsPercent');
 
-        // 物理參數
-        const GRAVITY = 9.8;
-        const JUMP_FORCE = 18;
-        const SPIN_SPEED = 720;
-
-        let positionY = 0;
-        let velocityY = 0;
-        let rotationZ = 0;
-        let spinVelocity = 0;
-        let animationFrame = null;
-        let startTime = 0;
-        const FLIP_DURATION = 2500;
-
         function flipCoin() {
             if (isFlipping) return;
 
@@ -346,85 +328,77 @@
 
             const isHeads = Math.random() < 0.5;
 
-            positionY = 0;
-            velocityY = JUMP_FORCE;
-            rotationZ = 0;
+            coin.classList.add('flipping');
 
             const minSpins = 7;
             const baseRotation = minSpins * 360;
-            const targetRotation = isHeads ? baseRotation : baseRotation + 180;
-            spinVelocity = targetRotation / (FLIP_DURATION / 1000);
+            const randomRotation = Math.random() * 360;
+            const targetRotation = baseRotation + randomRotation + (isHeads ? 0 : 180);
 
-            startTime = performance.now();
-            coin.classList.add('flipping');
+            const keyframes = [
+                {
+                    transform: 'translate(-50%, -50%) rotateX(20deg) rotateY(0deg)',
+                    offset: 0
+                },
+                {
+                    transform: 'translate(-50%, calc(-50% - 300px)) rotateX(20deg) rotateY(' + (targetRotation * 0.3) + 'deg)',
+                    offset: 0.3
+                },
+                {
+                    transform: 'translate(-50%, calc(-50% - 100px)) rotateX(20deg) rotateY(' + (targetRotation * 0.6) + 'deg)',
+                    offset: 0.6
+                },
+                {
+                    transform: 'translate(-50%, calc(-50% - 50px)) rotateX(20deg) rotateY(' + (targetRotation * 0.8) + 'deg)',
+                    offset: 0.8
+                },
+                {
+                    transform: 'translate(-50%, -50%) rotateX(20deg) rotateY(' + targetRotation + 'deg)',
+                    offset: 1
+                }
+            ];
 
-            requestAnimationFrame(animate);
-        }
+            const animation = coin.animate(keyframes, {
+                duration: 2500,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                fill: 'forwards'
+            });
 
-        function animate(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / FLIP_DURATION, 1);
+            const shadowKeyframes = [
+                { transform: 'translateX(-50%) scale(1)', opacity: 0.8 },
+                { transform: 'translateX(-50%) scale(0.3)', opacity: 0.2 },
+                { transform: 'translateX(-50%) scale(0.5)', opacity: 0.4 },
+                { transform: 'translateX(-50%) scale(0.7)', opacity: 0.6 },
+                { transform: 'translateX(-50%) scale(1)', opacity: 0.8 }
+            ];
 
-            if (progress < 1) {
-                const deltaTime = 0.016;
+            const shadowAnimation = shadow.animate(shadowKeyframes, {
+                duration: 2500,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                fill: 'forwards'
+            });
 
-                velocityY -= GRAVITY * deltaTime * 50;
-                positionY += velocityY * deltaTime * 100;
-                positionY = Math.max(0, positionY);
+            animation.onfinish = () => {
+                coin.classList.remove('flipping');
+                coin.style.transform = 'translate(-50%, -50%) rotateX(20deg) rotateY(' + (isHeads ? 0 : 180) + 'deg)';
 
-                rotationZ += spinVelocity * deltaTime * 100;
+                if (isHeads) {
+                    stats.heads++;
+                    result.textContent = '🌟 正面 (公)';
+                } else {
+                    stats.tails++;
+                    result.textContent = '🌙 反面 (字)';
+                }
+                stats.total++;
 
-                const easeOut = 1 - Math.pow(1 - progress, 3);
-                const currentY = positionY * (1 - easeOut * 0.3);
+                updateStats();
+                result.classList.add('show');
 
-                coin.style.transform = `
-                    translate(-50%, calc(-50% - ${currentY}px))
-                    rotateX(75deg)
-                    rotateZ(${rotationZ}deg)
-                `;
-
-                const shadowScale = Math.max(0.4, 1 - currentY / 400);
-                const shadowOpacity = Math.max(0.3, 0.8 - currentY / 500);
-                shadow.style.transform = `translateX(-50%) scale(${shadowScale})`;
-                shadow.style.opacity = shadowOpacity;
-
-                requestAnimationFrame(animate);
-            } else {
-                finishFlip();
-            }
-        }
-
-        function finishFlip() {
-            const finalRotationZ = Math.round(rotationZ / 180) * 180;
-            const isHeads = finalRotationZ % 360 === 0;
-
-            coin.style.transition = 'transform 0.3s ease-out';
-            coin.style.transform = `
-                translate(-50%, -50%)
-                rotateX(75deg)
-                rotateZ(${finalRotationZ}deg)
-            `;
-
-            shadow.style.transform = 'translateX(-50%) scale(1)';
-            shadow.style.opacity = '0.8';
-
-            if (isHeads) {
-                stats.heads++;
-                result.textContent = '🌟 正面 (公)';
-            } else {
-                stats.tails++;
-                result.textContent = '🌙 反面 (字)';
-            }
-            stats.total++;
-
-            updateStats();
-            result.classList.add('show');
-
-            setTimeout(() => {
-                isFlipping = false;
-                flipButton.disabled = false;
-                coin.style.transition = '';
-            }, 300);
+                setTimeout(() => {
+                    isFlipping = false;
+                    flipButton.disabled = false;
+                }, 300);
+            };
         }
 
         function updateStats() {
