@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>超逼真 3D 擲銀仔器</title>
+    <title>超逼真物理擲銀仔器</title>
     <style>
         * {
             margin: 0;
@@ -17,35 +17,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
-            touch-action: manipulation;
+            perspective: 1500px;
         }
 
         .title {
             color: #ffd700;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
             font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .scene {
-            width: min(80vw, 400px);
-            height: min(80vw, 400px);
-            perspective: 1200px;
-            perspective-origin: 50% 40%;
+            width: min(90vw, 500px);
+            height: min(90vw, 500px);
             position: relative;
-        }
-
-        .coin-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
+            perspective: 1500px;
+            perspective-origin: 50% 50%;
         }
 
         .coin {
@@ -55,23 +47,7 @@
             top: 50%;
             left: 50%;
             transform-style: preserve-3d;
-            transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg);
-        }
-
-        .coin.flipping {
-            animation: flip 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        @keyframes flip {
-            0% {
-                transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg) translateY(0);
-            }
-            30% {
-                transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg) translateY(-300px);
-            }
-            100% {
-                transform: translate(-50%, -50%) rotateX(75deg) rotateZ(var(--final-rotation, 1800deg)) translateY(0);
-            }
+            transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
         }
 
         .coin-face {
@@ -80,141 +56,51 @@
             height: 100%;
             border-radius: 50%;
             backface-visibility: hidden;
-            box-shadow:
-                inset 0 0 40px rgba(0, 0, 0, 0.3),
-                inset 0 0 10px rgba(255, 215, 0, 0.3),
-                0 5px 20px rgba(0, 0, 0, 0.4);
-            overflow: hidden;
-        }
-
-        .coin-face::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .coin-face::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-        }
-
-        .face-front {
-            background: linear-gradient(145deg, #ffd700 0%, #ffed4a 30%, #ffd700 50%, #daa520 70%, #b8860b 100%);
-            transform: rotateX(0deg);
-        }
-
-        .face-back {
-            background: linear-gradient(145deg, #e8e8e8 0%, #f5f5f5 30%, #e8e8e8 50%, #d0d0d0 70%, #a8a8a8 100%);
-            transform: rotateX(180deg);
-        }
-
-        .face-texture {
-            position: absolute;
-            inset: 3%;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2rem, 8vw, 4rem);
+            font-size: 4rem;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-        }
-
-        .face-front .face-texture {
-            color: #8b6914;
-            background:
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 60%),
-                linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffd700 100%);
-        }
-
-        .face-back .face-texture {
-            color: #505050;
-            background:
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%),
-                linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 50%, #e8e8e8 100%);
-        }
-
-        /* 硬幣邊緣 */
-        .coin-edge {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: repeating-conic-gradient(
-                from 0deg,
-                #ffd700 0deg 2deg,
-                #b8860b 2deg 4deg,
-                #ffd700 4deg 6deg,
-                #daa520 6deg 8deg
-            );
-            transform: translateZ(-10px);
             box-shadow:
-                0 0 20px rgba(0, 0, 0, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.3);
+                inset 0 0 50px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 0, 0, 0.8);
         }
 
-        .coin-edge::before {
-            content: '';
+        .coin-front {
+            background: linear-gradient(145deg, #ffd700 0%, #ffed4a 30%, #ffd700 50%, #daa520 70%, #b8860b 100%);
+            transform: rotateY(0deg);
+            color: #8b4513;
+        }
+
+        .coin-back {
+            background: linear-gradient(145deg, #e8e8e8 0%, #f5f5f5 30%, #e8e8e8 50%, #d0d0d0 70%, #a8a8a8 100%);
+            transform: rotateY(180deg);
+            color: #505050;
+        }
+
+        .coin-side {
             position: absolute;
-            inset: -5px;
-            border-radius: 50%;
-            border: 10px solid transparent;
-            background:
-                linear-gradient(#daa520, #ffd700) padding-box,
-                linear-gradient(#b8860b, #ffd700) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask-composite: exclude;
+            width: 20px;
+            height: 200px;
+            background: linear-gradient(to bottom, #daa520, #ffd700, #daa520);
+            transform: rotateY(90deg) translateZ(90px);
+            left: 50%;
+            margin-left: -10px;
         }
 
-        /* 邊緣刻紋 */
-        .edge-ridges {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 15px solid #daa520;
-            transform: translateZ(-5px);
-            background:
-                repeating-linear-gradient(
-                    0deg,
-                    transparent 0px,
-                    transparent 3px,
-                    rgba(0, 0, 0, 0.1) 3px,
-                    rgba(0, 0, 0, 0.1) 6px
-                );
-            border-radius: 50%;
-        }
-
-        /* 陰影效果 */
         .shadow {
             position: absolute;
-            width: 180px;
+            width: 200px;
             height: 60px;
-            background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
-            bottom: calc(50% - 120px);
+            background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+            bottom: calc(50% - 130px);
             left: 50%;
-            transform: translateX(-50%) rotateX(90deg);
-            filter: blur(10px);
-            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            filter: blur(15px);
+            transition: all 0.1s ease;
+            opacity: 0.8;
         }
 
-        .coin.flipping + .shadow {
-            opacity: 0.3;
-            transform: translateX(-50%) rotateX(90deg) scale(0.7);
-        }
-
-        /* 統計面板 */
         .stats {
             display: flex;
             gap: 30px;
@@ -223,12 +109,12 @@
 
         .stat-item {
             text-align: center;
-            padding: 20px;
+            padding: 20px 30px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             min-width: 120px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stat-label {
@@ -243,35 +129,34 @@
             color: #ffd700;
         }
 
-        .stat-percentage {
+        .stat-percent {
             color: #888;
             font-size: 0.9rem;
             margin-top: 5px;
         }
 
-        /* 擲幣按鈕 */
         .flip-button {
             margin-top: 30px;
-            padding: 15px 50px;
-            font-size: 1.2rem;
+            padding: 20px 60px;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: #1a1a2e;
+            color: #1a1a1a;
             background: linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffd700 100%);
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 5px 30px rgba(255, 215, 0, 0.5);
             transition: all 0.3s ease;
             text-transform: uppercase;
         }
 
         .flip-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.7);
         }
 
         .flip-button:active:not(:disabled) {
-            transform: translateY(1px);
+            transform: translateY(0);
         }
 
         .flip-button:disabled {
@@ -279,65 +164,30 @@
             cursor: not-allowed;
         }
 
-        /* 結果顯示 */
         .result {
             margin-top: 20px;
-            padding: 15px 30px;
+            padding: 15px 40px;
             background: rgba(255, 215, 0, 0.1);
             border: 2px solid #ffd700;
             border-radius: 10px;
             color: #ffd700;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             opacity: 0;
-            transform: translateY(-10px);
+            transform: scale(0.9);
             transition: all 0.3s ease;
         }
 
         .result.show {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1);
         }
 
-        /* 提示文字 */
         .hint {
-            color: #888;
+            color: #666;
             font-size: 0.9rem;
             margin-top: 20px;
             text-align: center;
-        }
-
-        /* 音效控制 */
-        .sound-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .sound-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* 地面 */
-        .ground {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-                linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
-            pointer-events: none;
         }
 
         @media (max-width: 600px) {
@@ -346,74 +196,53 @@
                 height: 150px;
             }
 
+            .coin-side {
+                height: 150px;
+                transform: rotateY(90deg) translateZ(65px);
+            }
+
             .shadow {
-                width: 135px;
-                height: 45px;
-                bottom: calc(50% - 90px);
+                width: 150px;
+                bottom: calc(50% - 100px);
             }
 
             .stats {
                 flex-direction: column;
                 gap: 15px;
             }
-
-            .stat-item {
-                padding: 15px;
-                min-width: 100px;
-            }
         }
     </style>
 </head>
 <body>
-    <button class="sound-toggle" id="soundToggle" aria-label="Toggle Sound">🔊</button>
+    <h1 class="title">🪙 超逼真物理擲銀仔器</h1>
 
-    <h1 class="title">🪙 超逼真 3D 擲銀仔器</h1>
-
-    <div class="scene" id="scene">
-        <div class="coin-container" id="coinContainer">
-            <div class="coin" id="coin">
-                <div class="coin-face face-front">
-                    <div class="face-texture">
-                        <svg viewBox="0 0 100 100" width="100%" height="100%">
-                            <!-- 外圈 -->
-                            <circle cx="50" cy="50" r="48" fill="none" stroke="#b8860b" stroke-width="1"/>
-                            <circle cx="50" cy="50" r="44" fill="none" stroke="#ffd700" stroke-width="0.5"/>
-                            <!-- 花朵圖案 -->
-                            <g transform="translate(50, 50)">
-                                <circle cx="0" cy="-15" r="8" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
-                                <circle cx="0" cy="15" r="8" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
-                                <circle cx="-15" cy="0" r="8" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
-                                <circle cx="15" cy="0" r="8" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
-                                <circle cx="0" cy="0" r="10" fill="#ffed4a" stroke="#daa520" stroke-width="1"/>
-                            </g>
-                            <!-- 邊緣紋理 -->
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#daa520" stroke-width="0.3" stroke-dasharray="2 1"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="coin-edge"></div>
-                <div class="edge-ridges"></div>
-                <div class="coin-face face-back">
-                    <div class="face-texture">
-                        <svg viewBox="0 0 100 100" width="100%" height="100%">
-                            <!-- 外圈 -->
-                            <circle cx="50" cy="50" r="48" fill="none" stroke="#888" stroke-width="1"/>
-                            <circle cx="50" cy="50" r="44" fill="none" stroke="#bbb" stroke-width="0.5"/>
-                            <!-- 幣值圖案 -->
-                            <g transform="translate(50, 50)">
-                                <circle cx="0" cy="0" r="25" fill="#e8e8e8" stroke="#888" stroke-width="1"/>
-                                <text x="0" y="-5" text-anchor="middle" font-size="14" font-weight="bold" fill="#505050">$</text>
-                                <text x="0" y="15" text-anchor="middle" font-size="16" font-weight="bold" fill="#505050">1</text>
-                            </g>
-                            <!-- 邊緣紋理 -->
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#999" stroke-width="0.3" stroke-dasharray="2 1"/>
-                        </svg>
-                    </div>
-                </div>
+    <div class="scene">
+        <div class="coin" id="coin">
+            <div class="coin-face coin-front">
+                <svg viewBox="0 0 100 100" width="80%" height="80%">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#b8860b" stroke-width="2"/>
+                    <g transform="translate(50, 50)">
+                        <circle cx="0" cy="-18" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+                        <circle cx="0" cy="18" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+                        <circle cx="-18" cy="0" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+                        <circle cx="18" cy="0" r="10" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+                        <circle cx="0" cy="0" r="12" fill="#ffed4a" stroke="#daa520" stroke-width="2"/>
+                    </g>
+                </svg>
             </div>
-            <div class="shadow" id="shadow"></div>
+            <div class="coin-face coin-back">
+                <svg viewBox="0 0 100 100" width="80%" height="80%">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#888" stroke-width="2"/>
+                    <g transform="translate(50, 50)">
+                        <circle cx="0" cy="0" r="30" fill="#e8e8e8" stroke="#888" stroke-width="2"/>
+                        <text x="0" y="-8" text-anchor="middle" font-size="20" font-weight="bold" fill="#505050">$</text>
+                        <text x="0" y="20" text-anchor="middle" font-size="24" font-weight="bold" fill="#505050">1</text>
+                    </g>
+                </svg>
+            </div>
+            <div class="coin-side"></div>
         </div>
-        <div class="ground"></div>
+        <div class="shadow" id="shadow"></div>
     </div>
 
     <div class="result" id="result"></div>
@@ -424,12 +253,12 @@
         <div class="stat-item">
             <div class="stat-label">正面 (公)</div>
             <div class="stat-value" id="headsCount">0</div>
-            <div class="stat-percentage" id="headsPercent">0%</div>
+            <div class="stat-percent" id="headsPercent">0%</div>
         </div>
         <div class="stat-item">
             <div class="stat-label">反面 (字)</div>
             <div class="stat-value" id="tailsCount">0</div>
-            <div class="stat-percentage" id="tailsPercent">0%</div>
+            <div class="stat-percent" id="tailsPercent">0%</div>
         </div>
         <div class="stat-item">
             <div class="stat-label">總次數</div>
@@ -438,7 +267,7 @@
     </div>
 
     <div class="hint">
-        💡 點擊擲幣 | 拖曳旋轉視角 | 完全離線可用
+        💡 完全離線可用 | 真實物理模擬
     </div>
 
     <script>
@@ -450,72 +279,34 @@
         };
 
         let isFlipping = false;
-        let soundEnabled = true;
+
+        // 物理參數
+        const GRAVITY = 9.8;
+        const JUMP_FORCE = 15;
+        const SPIN_SPEED = 25;
 
         // DOM 元素
         const coin = document.getElementById('coin');
         const flipButton = document.getElementById('flipButton');
         const result = document.getElementById('result');
+        const shadow = document.getElementById('shadow');
         const headsCount = document.getElementById('headsCount');
         const tailsCount = document.getElementById('tailsCount');
         const totalCount = document.getElementById('totalCount');
         const headsPercent = document.getElementById('headsPercent');
         const tailsPercent = document.getElementById('tailsPercent');
-        const scene = document.getElementById('scene');
-        const coinContainer = document.getElementById('coinContainer');
-        const soundToggle = document.getElementById('soundToggle');
 
-        // 音效生成器
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
+        // 物理模擬變數
+        let positionY = 0;
+        let velocityY = 0;
+        let rotationY = 0;
+        let rotationX = 0;
+        let rotationZ = 0;
+        let spinVelocityX = 0;
+        let spinVelocityY = 0;
+        let spinVelocityZ = 0;
+        let lastTime = 0;
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
-        }
-
-        function playFlipSound() {
-            if (!soundEnabled) return;
-            initAudio();
-
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + 0.3);
-        }
-
-        function playLandSound() {
-            if (!soundEnabled) return;
-            initAudio();
-
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            oscillator.frequency.value = 400;
-            oscillator.type = 'triangle';
-
-            gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + 0.2);
-        }
-
-        // 擲幣邏輯
         function flipCoin() {
             if (isFlipping) return;
 
@@ -523,53 +314,133 @@
             flipButton.disabled = true;
             result.classList.remove('show');
 
-            playFlipSound();
-
             // 隨機決定結果
             const isHeads = Math.random() < 0.5;
 
-            // 計算旋轉角度 (至少旋轉 5 圈)
-            const minRotations = 5;
-            const baseRotation = minRotations * 360;
-            const randomExtra = Math.floor(Math.random() * 360);
+            // 初始化物理狀態
+            positionY = 0;
+            velocityY = JUMP_FORCE;
+            rotationY = 0;
+            rotationX = 0;
+            rotationZ = 0;
 
-            // 確保最終角度正確
-            // 0 = 正面, 180 = 反面
-            let finalRotation = baseRotation + randomExtra;
-            if (isHeads) {
-                finalRotation = Math.round(finalRotation / 360) * 360;
-            } else {
-                finalRotation = Math.round(finalRotation / 360) * 360 + 180;
+            // 隨機旋轉速度 (至少 5 圈)
+            const minSpins = 5;
+            const baseSpin = minSpins * 360;
+            const randomSpin = Math.random() * 720;
+            spinVelocityY = (baseSpin + randomSpin) / 100;
+            spinVelocityX = (Math.random() - 0.5) * 10;
+            spinVelocityZ = (Math.random() - 0.5) * 10;
+
+            // 確保最終結果正確
+            // 計算總旋轉角度
+            let targetRotationY = baseSpin + randomSpin;
+            if (!isHeads) {
+                targetRotationY += 180;
             }
+            targetRotationY = Math.round(targetRotationY / 180) * 180;
 
-            coin.style.setProperty('--final-rotation', finalRotation + 'deg');
-            coin.classList.add('flipping');
-
-            // 動畫結束後顯示結果
-            setTimeout(() => {
-                playLandSound();
-                coin.classList.remove('flipping');
-                coin.style.transform = 'translate(-50%, -50%) rotateX(75deg) rotateZ(' + (isHeads ? 0 : 180) + 'deg)';
-
-                // 更新統計
-                if (isHeads) {
-                    stats.heads++;
-                    result.textContent = '🌟 正面 (公)';
-                } else {
-                    stats.tails++;
-                    result.textContent = '🌙 反面 (字)';
-                }
-                stats.total++;
-
-                updateStats();
-                result.classList.add('show');
-
-                isFlipping = false;
-                flipButton.disabled = false;
-            }, 2000);
+            // 開始物理模擬
+            lastTime = performance.now();
+            requestAnimationFrame((time) => simulatePhysics(time, isHeads, targetRotationY));
         }
 
-        // 更新統計顯示
+        function simulatePhysics(currentTime, isHeads, targetRotationY) {
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+
+            // 重力作用
+            velocityY -= GRAVITY * deltaTime * 50;
+
+            // 更新位置
+            positionY += velocityY * deltaTime * 100;
+
+            // 更新旋轉
+            rotationY += spinVelocityY * deltaTime * 100;
+            rotationX += spinVelocityX * deltaTime * 100;
+            rotationZ += spinVelocityZ * deltaTime * 100;
+
+            // 阻力效果
+            spinVelocityX *= 0.99;
+            spinVelocityZ *= 0.99;
+
+            // 檢查是否落地
+            if (positionY <= 0) {
+                positionY = 0;
+
+                // 彈跳效果
+                if (Math.abs(velocityY) > 2) {
+                    velocityY = -velocityY * 0.3;
+                    spinVelocityY *= 0.8;
+                } else {
+                    // 完全停止
+                    finishFlip(isHeads);
+                    return;
+                }
+            }
+
+            // 更新視覺
+            updateVisuals();
+
+            // 繼續模擬
+            requestAnimationFrame((time) => simulatePhysics(time, isHeads, targetRotationY));
+        }
+
+        function updateVisuals() {
+            // 3D 變換
+            coin.style.transform = `
+                translate(-50%, calc(-50% - ${positionY}px))
+                rotateX(${rotationX}deg)
+                rotateY(${rotationY}deg)
+                rotateZ(${rotationZ}deg)
+            `;
+
+            // 陰影效果
+            const shadowScale = Math.max(0.3, 1 - positionY / 300);
+            const shadowOpacity = Math.max(0.2, 0.8 - positionY / 400);
+            shadow.style.transform = `translateX(-50%) scale(${shadowScale})`;
+            shadow.style.opacity = shadowOpacity;
+        }
+
+        function finishFlip(isHeads) {
+            // 對齊到最終位置
+            const finalRotationY = isHeads ? 0 : 180;
+            const finalRotationX = Math.round(rotationX / 360) * 360;
+            const finalRotationZ = Math.round(rotationZ / 360) * 360;
+
+            coin.style.transition = 'transform 0.3s ease-out';
+            coin.style.transform = `
+                translate(-50%, -50%)
+                rotateX(${finalRotationX}deg)
+                rotateY(${finalRotationY}deg)
+                rotateZ(${finalRotationZ}deg)
+            `;
+
+            // 重置陰影
+            shadow.style.transform = 'translateX(-50%) scale(1)';
+            shadow.style.opacity = '0.8';
+
+            // 更新統計
+            if (isHeads) {
+                stats.heads++;
+                result.textContent = '🌟 正面 (公)';
+            } else {
+                stats.tails++;
+                result.textContent = '🌙 反面 (字)';
+            }
+            stats.total++;
+
+            updateStats();
+            result.classList.add('show');
+
+            // 重置按鈕
+            setTimeout(() => {
+                isFlipping = false;
+                flipButton.disabled = false;
+                coin.style.transition = '';
+            }, 300);
+        }
+
         function updateStats() {
             headsCount.textContent = stats.heads;
             tailsCount.textContent = stats.tails;
@@ -582,97 +453,14 @@
             tailsPercent.textContent = tailsPct + '%';
         }
 
-        // 觸控旋轉視角
-        let isDragging = false;
-        let startX, startY;
-        let rotateX = 0;
-        let rotateY = 0;
-
-        scene.addEventListener('mousedown', (e) => {
-            if (e.target === flipButton) return;
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-        });
-
-        scene.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-
-            rotateY += deltaX * 0.5;
-            rotateX -= deltaY * 0.5;
-
-            rotateX = Math.max(-60, Math.min(60, rotateX));
-
-            coinContainer.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-            startX = e.clientX;
-            startY = e.clientY;
-        });
-
-        scene.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        scene.addEventListener('mouseleave', () => {
-            isDragging = false;
-        });
-
-        // 觸控支援
-        scene.addEventListener('touchstart', (e) => {
-            if (e.target === flipButton) return;
-            isDragging = true;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-
-        scene.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-
-            const deltaX = e.touches[0].clientX - startX;
-            const deltaY = e.touches[0].clientY - startY;
-
-            rotateY += deltaX * 0.5;
-            rotateX -= deltaY * 0.5;
-
-            rotateX = Math.max(-60, Math.min(60, rotateX));
-
-            coinContainer.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        }, { passive: false });
-
-        scene.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-
         // 擲幣按鈕
         flipButton.addEventListener('click', flipCoin);
-
-        // 音效切換
-        soundToggle.addEventListener('click', () => {
-            soundEnabled = !soundEnabled;
-            soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
-        });
 
         // 鍵盤快捷鍵
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && !isFlipping) {
                 e.preventDefault();
                 flipCoin();
-            }
-        });
-
-        // 頁面可見性變化時重置動畫
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && isFlipping) {
-                coin.classList.remove('flipping');
-                isFlipping = false;
-                flipButton.disabled = false;
             }
         });
 
